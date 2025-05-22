@@ -1,24 +1,48 @@
 # data.py
-# 存储配方、权重、MBTI目标，新增中级配方和削弱属性
+# 存储配方、权重、MBTI目标，新增中级配方、削弱属性、item_type，物品名称改为中文
 
 import random
 
 # 默认权重
 default_weights = {
-    'fire': {'E': 0.55, 'S': 0.25, 'N': 0.15, 'T': 0.05},
     'water': {'F': 0.55, 'I': 0.25, 'N': 0.15, 'J': 0.05},
+    'fire': {'E': 0.55, 'S': 0.25, 'N': 0.15, 'T': 0.05},
     'earth': {'S': 0.55, 'J': 0.25, 'F': 0.15, 'I': 0.05},
     'air': {'T': 0.55, 'P': 0.25, 'S': 0.15, 'N': 0.05}
 }
 
 # 初级物品范围
 initial_items = {
-    'crystal': {'main': ['water'], 'ranges': {'water': (0.7, 0.9), 'fire': (0, 0.3), 'earth': (0, 0.3), 'air': (0, 0.3)}},
-    'flame': {'main': ['fire'], 'ranges': {'fire': (0.7, 0.9), 'water': (0, 0.3), 'earth': (0, 0.3), 'air': (0, 0.3)}},
-    'mud': {'main': ['earth', 'water'], 'ranges': {'earth': (0.4, 0.6), 'water': (0.3, 0.5), 'fire': (0, 0.2), 'air': (0, 0.2)}},
-    'gust': {'main': ['air'], 'ranges': {'air': (0.7, 0.9), 'water': (0, 0.3), 'fire': (0, 0.3), 'earth': (0, 0.3)}},
-    'ore': {'main': ['earth'], 'ranges': {'earth': (0.7, 0.9), 'water': (0, 0.3), 'fire': (0, 0.3), 'air': (0, 0.3)}},
-    'spark': {'main': ['fire', 'air'], 'ranges': {'fire': (0.4, 0.6), 'air': (0.3, 0.5), 'water': (0, 0.2), 'earth': (0, 0.2)}}
+    '水晶': {
+        'main': ['water'],
+        'ranges': {'water': (0.7, 0.9), 'fire': (0, 0.3), 'earth': (0, 0.3), 'air': (0, 0.3)},
+        'item_type': 'initial'
+    },
+    '火焰': {
+        'main': ['fire'],
+        'ranges': {'fire': (0.7, 0.9), 'water': (0, 0.3), 'earth': (0, 0.3), 'air': (0, 0.3)},
+        'item_type': 'initial'
+    },
+    '泥浆': {
+        'main': ['earth', 'water'],
+        'ranges': {'earth': (0.4, 0.6), 'water': (0.3, 0.5), 'fire': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'initial'
+    },
+    '气流': {
+        'main': ['air'],
+        'ranges': {'air': (0.7, 0.9), 'water': (0, 0.3), 'fire': (0, 0.3), 'earth': (0, 0.3)},
+        'item_type': 'initial'
+    },
+    '矿石': {
+        'main': ['earth'],
+        'ranges': {'earth': (0.7, 0.9), 'water': (0, 0.3), 'fire': (0, 0.3), 'air': (0, 0.3)},
+        'item_type': 'initial'
+    },
+    '火花': {
+        'main': ['fire', 'air'],
+        'ranges': {'fire': (0.4, 0.6), 'air': (0.3, 0.5), 'water': (0, 0.2), 'earth': (0, 0.2)},
+        'item_type': 'initial'
+    }
 }
 
 # 属性定义（增强和削弱）
@@ -137,97 +161,112 @@ item_traits = {
     }
 }
 
-# 中级物品配方（新增10个，总15个）
+# 中级物品配方（15种）
 intermediate_recipes = {
-    'deep_sea_heart': {
-        'items': {'crystal': 2, 'flame': 1},
+    '深海之心': {
+        'items': {'水晶': 2, '火焰': 1},
         'elements': {'water': 0.7, 'earth': 0.2, 'fire': 0.1},
         'trait': 'emotional_resonance',
-        'ranges': {'water': (0.6, 0.8), 'earth': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)}
+        'ranges': {'water': (0.6, 0.8), 'earth': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'blazing_crystal': {
-        'items': {'flame': 2, 'crystal': 1},
+    '烈焰水晶': {
+        'items': {'火焰': 2, '水晶': 1},
         'elements': {'fire': 0.6, 'water': 0.2, 'air': 0.2},
         'trait': 'intuitive_spark',
-        'ranges': {'fire': (0.5, 0.7), 'water': (0.1, 0.3), 'air': (0.1, 0.3), 'earth': (0, 0.2)}
+        'ranges': {'fire': (0.5, 0.7), 'water': (0.1, 0.3), 'air': (0.1, 0.3), 'earth': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'starfire_essence': {
-        'items': {'spark': 1, 'flame': 1, 'gust': 1},
+    '星火精华': {
+        'items': {'火花': 1, '火焰': 1, '气流': 1},
         'elements': {'fire': 0.5, 'air': 0.3, 'water': 0.1, 'earth': 0.1},
         'trait': 'creative_flare',
-        'ranges': {'fire': (0.4, 0.6), 'air': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)}
+        'ranges': {'fire': (0.4, 0.6), 'air': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'moonshadow_water': {
-        'items': {'mud': 2, 'crystal': 1},
+    '月影之水': {
+        'items': {'泥浆': 2, '水晶': 1},
         'elements': {'water': 0.5, 'earth': 0.3, 'fire': 0.1, 'air': 0.1},
         'trait': 'empathic_flow',
-        'ranges': {'water': (0.4, 0.6), 'earth': (0.2, 0.4), 'fire': (0, 0.2), 'air': (0, 0.2)}
+        'ranges': {'water': (0.4, 0.6), 'earth': (0.2, 0.4), 'fire': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'geocore': {
-        'items': {'ore': 2, 'mud': 1},
+    '地心矿核': {
+        'items': {'矿石': 2, '泥浆': 1},
         'elements': {'earth': 0.6, 'water': 0.2, 'fire': 0.1, 'air': 0.1},
         'trait': 'steadfast_duty',
-        'ranges': {'earth': (0.5, 0.7), 'water': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)}
+        'ranges': {'earth': (0.5, 0.7), 'water': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'wind_spirit': {
-        'items': {'gust': 2, 'spark': 1},
+    '风之精魄': {
+        'items': {'气流': 2, '火花': 1},
         'elements': {'air': 0.5, 'fire': 0.3, 'water': 0.1, 'earth': 0.1},
         'trait': 'freedom_breeze',
-        'ranges': {'air': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)}
+        'ranges': {'air': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'jade_wave': {
-        'items': {'crystal': 2, 'mud': 1},
+    '碧波灵液': {
+        'items': {'水晶': 2, '泥浆': 1},
         'elements': {'water': 0.6, 'earth': 0.2, 'fire': 0.1, 'air': 0.1},
         'trait': 'empathic_tide',
-        'ranges': {'water': (0.5, 0.7), 'earth': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)}
+        'ranges': {'water': (0.5, 0.7), 'earth': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'blaze_core': {
-        'items': {'flame': 2, 'spark': 1},
+    '炽焰核心': {
+        'items': {'火焰': 2, '火花': 1},
         'elements': {'fire': 0.6, 'air': 0.2, 'water': 0.1, 'earth': 0.1},
         'trait': 'passionate_flare',
-        'ranges': {'fire': (0.5, 0.7), 'air': (0.1, 0.3), 'water': (0, 0.2), 'earth': (0, 0.2)}
+        'ranges': {'fire': (0.5, 0.7), 'air': (0.1, 0.3), 'water': (0, 0.2), 'earth': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'vein_essence': {
-        'items': {'ore': 2, 'flame': 1},
+    '岩脉精华': {
+        'items': {'矿石': 2, '火焰': 1},
         'elements': {'earth': 0.5, 'fire': 0.3, 'water': 0.1, 'air': 0.1},
         'trait': 'dutiful_rock',
-        'ranges': {'earth': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'air': (0, 0.2)}
+        'ranges': {'earth': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'star_shard': {
-        'items': {'crystal': 1, 'spark': 1, 'gust': 1},
+    '星辉碎片': {
+        'items': {'水晶': 1, '火花': 1, '气流': 1},
         'elements': {'water': 0.3, 'fire': 0.3, 'air': 0.3, 'earth': 0.1},
         'trait': 'creative_glow',
-        'ranges': {'water': (0.2, 0.4), 'fire': (0.2, 0.4), 'air': (0.2, 0.4), 'earth': (0, 0.2)}
+        'ranges': {'water': (0.2, 0.4), 'fire': (0.2, 0.4), 'air': (0.2, 0.4), 'earth': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'dark_spring': {
-        'items': {'mud': 2, 'gust': 1},
+    '幽泉之息': {
+        'items': {'泥浆': 2, '气流': 1},
         'elements': {'water': 0.4, 'earth': 0.3, 'air': 0.2, 'fire': 0.1},
         'trait': 'introspective_mist',
-        'ranges': {'water': (0.3, 0.5), 'earth': (0.2, 0.4), 'air': (0.1, 0.3), 'fire': (0, 0.2)}
+        'ranges': {'water': (0.3, 0.5), 'earth': (0.2, 0.4), 'air': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'magma_crystal': {
-        'items': {'flame': 2, 'ore': 1},
+    '熔岩晶核': {
+        'items': {'火焰': 2, '矿石': 1},
         'elements': {'fire': 0.5, 'earth': 0.3, 'water': 0.1, 'air': 0.1},
         'trait': 'stable_heat',
-        'ranges': {'fire': (0.4, 0.6), 'earth': (0.2, 0.4), 'water': (0, 0.2), 'air': (0, 0.2)}
+        'ranges': {'fire': (0.4, 0.6), 'earth': (0.2, 0.4), 'water': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'mist_essence': {
-        'items': {'crystal': 2, 'gust': 1},
+    '雾隐精华': {
+        'items': {'水晶': 2, '气流': 1},
         'elements': {'water': 0.5, 'air': 0.3, 'earth': 0.1, 'fire': 0.1},
         'trait': 'rational_mist',
-        'ranges': {'water': (0.4, 0.6), 'air': (0.2, 0.4), 'earth': (0, 0.2), 'fire': (0, 0.2)}
+        'ranges': {'water': (0.4, 0.6), 'air': (0.2, 0.4), 'earth': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'earth_flame': {
-        'items': {'ore': 1, 'flame': 1, 'mud': 1},
+    '地焰之种': {
+        'items': {'矿石': 1, '火焰': 1, '泥浆': 1},
         'elements': {'earth': 0.4, 'fire': 0.3, 'water': 0.2, 'air': 0.1},
         'trait': 'empathic_earth',
-        'ranges': {'earth': (0.3, 0.5), 'fire': (0.2, 0.4), 'water': (0.1, 0.3), 'air': (0, 0.2)}
+        'ranges': {'earth': (0.3, 0.5), 'fire': (0.2, 0.4), 'water': (0.1, 0.3), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
     },
-    'spirit_breeze': {
-        'items': {'spark': 2, 'gust': 1},
+    '灵风结晶': {
+        'items': {'火花': 2, '气流': 1},
         'elements': {'air': 0.4, 'fire': 0.3, 'water': 0.1, 'earth': 0.2},
         'trait': 'free_spirit',
-        'ranges': {'air': (0.3, 0.5), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0.1, 0.3)}
+        'ranges': {'air': (0.3, 0.5), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0.1, 0.3)},
+        'item_type': 'intermediate'
     }
 }
 

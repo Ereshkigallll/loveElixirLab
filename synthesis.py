@@ -1,5 +1,5 @@
 # synthesis.py
-# 核心合成逻辑：初级随机合成（记录输入比例，添加随机属性）、中级随机合成（自动配方匹配）、MBTI
+# 核心合成逻辑：初级随机合成（100%元素规则，中文名称）、中级随机合成（自动配方匹配）、MBTI随机合成（仅中级物品，保底机制，存储历史）
 
 from data import default_weights, initial_items, intermediate_recipes, mbti_targets, interactions, item_traits
 from utils import normalize_elements, normalize_weights, apply_disturbance, generate_hint
@@ -116,7 +116,7 @@ def apply_interactions(elements):
 
 
 def synthesize_initial(elements, input_elements):
-    """初级物品随机合成，记录输入比例，添加随机属性"""
+    """初级物品随机合成，记录输入比例，添加随机属性，支持100%元素规则"""
     total_input = sum(input_elements.values())
     if total_input == 0:
         return None, elements, "请输入至少一种元素！"
@@ -126,22 +126,40 @@ def synthesize_initial(elements, input_elements):
 
     input_ratios = normalize_elements(input_elements)
 
-    probabilities = {}
-    for item_name, item_data in initial_items.items():
-        typical_ratios = {elem: (ranges[0] + ranges[1]) / 2 for elem, ranges in item_data['ranges'].items()}
-        vec1 = np.array([input_ratios.get(elem, 0) for elem in ['water', 'fire', 'earth', 'air']])
-        vec2 = np.array([typical_ratios.get(elem, 0) for elem in ['water', 'fire', 'earth', 'air']])
-        similarity = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2) + 1e-10)
-        probabilities[item_name] = similarity
+    # 检查100%元素规则
+    item_name = None
+    for elem, ratio in input_ratios.items():
+        if ratio == 1.0:
+            # 查找该元素比例最高的物品
+            max_ratio = -1
+            for name, data in initial_items.items():
+                elem_range = data['ranges'].get(elem, (0, 0))
+                max_elem_ratio = elem_range[1]  # 取范围最大值
+                if max_elem_ratio > max_ratio:
+                    max_ratio = max_elem_ratio
+                    item_name = name
+            break
 
-    total_prob = sum(probabilities.values())
-    if total_prob == 0:
-        return None, elements, "无法合成任何物品！"
-    probabilities = {k: v / total_prob for k, v in probabilities.items()}
+    # 若无100%元素，使用随机选择
+    if not item_name:
+        probabilities = {}
+        for item_name, item_data in initial_items.items():
+            typical_ratios = {elem: (ranges[0] + ranges[1]) / 2 for elem, ranges in item_data['ranges'].items()}
+            vec1 = np.array([input_ratios.get(elem, 0) for elem in ['water', 'fire', 'earth', 'air']])
+            vec2 = np.array([typical_ratios.get(elem, 0) for elem in ['water', 'fire', 'earth', 'air']])
+            similarity = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2) + 1e-10)
+            probabilities[item_name] = similarity
 
-    item_name = random.choices(list(probabilities.keys()), weights=list(probabilities.values()), k=1)[0]
+        total_prob = sum(probabilities.values())
+        if total_prob == 0:
+            return None, elements, "无法合成任何物品！"
+        probabilities = {k: v / total_prob for k, v in probabilities.items()}
+
+        item_name = random.choices(list(probabilities.keys()), weights=list(probabilities.values()), k=1)[0]
+
     item_elements = input_ratios
 
+    # 随机赋予属性（0-2个）
     trait_probs = {}
     for trait, data in item_traits.items():
         prob = 0
@@ -159,7 +177,6 @@ def synthesize_initial(elements, input_elements):
             selected_traits = random.choices(available_traits, weights=trait_weights,
                                              k=min(num_traits, len(available_traits)))
             selected_traits = list(dict.fromkeys(selected_traits))  # 避免重复
-            # 避免正负冲突
             mbti_attrs = set()
             for t in selected_traits:
                 mbti = item_traits[t]['mbti']
@@ -174,7 +191,8 @@ def synthesize_initial(elements, input_elements):
     return {
         'name': item_name,
         'elements': item_elements,
-        'traits': traits
+        'traits': traits,
+        'item_type': 'initial'
     }, new_elements, f"初级物品合成成功！获得：{item_name}"
 
 
@@ -284,18 +302,24 @@ def synthesize_intermediate(inventory, selected_items):
     return {
         'name': item_name,
         'elements': item_elements,
-        'traits': traits
+        'traits': traits,
+        'item_type': 'intermediate'
     }, new_inventory, f"中级物品合成成功！获得：{item_name}"
 
 
-def synthesize_mbti(items):
-    """MBTI 合成"""
-    if not items:
-        return None, generate_hint({}, False)
+def synthesize_mbti(inventory, selected_items):
+    """MBTI 随机合成，基于选择的中级物品，支持保底机制"""
+    if not selected_items:
+        return None, None, "请至少选择一个物品！"
+
+    # 检查是否均为中级物品
+    if any(item['item_type'] != 'intermediate' for item in selected_items):
+        return None, None, "MBTI 合成仅限中级物品！"
+
+    # 计算平均元素比例
     total_elements = {'water': 0, 'fire': 0, 'earth': 0, 'air': 0}
     traits = []
-
-    for item in items:
+    for item in selected_items:
         for elem, ratio in item['elements'].items():
             total_elements[elem] += ratio
         traits.extend(item.get('traits', []))
@@ -304,35 +328,47 @@ def synthesize_mbti(items):
     total_elements = apply_disturbance(total_elements)
     ratios = normalize_elements(total_elements)
 
-    contributions = {'E': 0, 'I': 0, 'S': 0, 'N': 0, 'T': 0, 'F': 0, 'J': 0, 'P': 0}
-    for elem, amount in total_elements.items():
-        weights = adjust_weights(elem, {'ratios': ratios, 'traits': traits})
-        for attr, weight in weights.items():
-            contributions[attr] += amount * weight
-
-    pairs = [('E', 'I'), ('S', 'N'), ('T', 'F'), ('J', 'P')]
-    for attr1, attr2 in pairs:
-        total = contributions[attr1] + contributions[attr2]
-        if total > 0:
-            contributions[attr1] /= total
-            contributions[attr2] /= total
-        else:
-            contributions[attr1] = contributions[attr2] = 0.5
-
-    best_mbti, best_score = None, float('inf')
+    # 随机选择 MBTI
+    probabilities = {}
     for mbti, target in mbti_targets.items():
-        score = sum((ratios.get(elem, 0) - target.get(elem, 0)) ** 2 for elem in target)
-        if score < best_score:
-            best_score = score
-            best_mbti = mbti
+        vec1 = np.array([ratios.get(elem, 0) for elem in ['water', 'fire', 'earth', 'air']])
+        vec2 = np.array([target.get(elem, 0) for elem in ['water', 'fire', 'earth', 'air']])
+        similarity = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2) + 1e-10)
+        probabilities[mbti] = similarity
 
-    success_rate = max(0, 1 - best_score * 10) * 100
-    success = success_rate > 80 and best_mbti in mbti_targets
-    hint = generate_hint(ratios, success, best_mbti)
-    return {
+    total_prob = sum(probabilities.values())
+    if total_prob == 0:
+        return None, None, generate_hint(ratios, False)
+    probabilities = {k: v / total_prob for k, v in probabilities.items()}
+
+    best_mbti = random.choices(list(probabilities.keys()), weights=list(probabilities.values()), k=1)[0]
+
+    # 计算成功率
+    target = mbti_targets[best_mbti]
+    score = sum((ratios.get(elem, 0) - target.get(elem, 0)) ** 2 for elem in target)
+    success_rate = max(0, 1 - score * 10) * 100
+    success = success_rate > 80
+
+    # 保底机制
+    trait = None
+    if not success:
+        # 从现实比例最高的 4 个 MBTI 随机选择
+        best_mbti = random.choice(['ISFJ', 'ESFJ', 'ISTJ', 'ISFP'])
+        # 随机赋予削弱属性
+        negative_traits = ['疲惫', '迷茫', '固执', '浮躁', '冷漠', '混乱', '拖延', '散漫']
+        trait = random.choice(negative_traits)
+
+    # 扣除物品
+    new_inventory = inventory.copy()
+    for item in selected_items:
+        new_inventory.remove(item)
+
+    hint = generate_hint(ratios, success, best_mbti, trait)
+    result = {
         'mbti': best_mbti,
-        'success_rate': success_rate,
         'ratios': ratios,
-        'contributions': contributions,
-        'success': success
-    }, hint
+        'success': success,
+        'trait': trait  # 保底时包含削弱属性
+    }
+
+    return result, new_inventory, hint
