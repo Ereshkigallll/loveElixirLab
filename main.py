@@ -1,14 +1,11 @@
 # main.py
-# 主程序：UI 和玩家输入，支持随机初级合成
-
-# main.py
-# 主程序：UI 和玩家输入，支持随机初级合成，显示输入比例
+# 主程序：UI 和玩家输入，支持随机初级和中级合成，选择具体物品
 
 import tkinter as tk
 from tkinter import messagebox
 import random
 from synthesis import synthesize_initial, synthesize_intermediate, synthesize_mbti
-from data import initial_items, intermediate_recipes, mbti_targets
+from data import initial_items, intermediate_recipes, mbti_targets, item_traits
 
 
 class MBTISynthesisApp:
@@ -20,60 +17,57 @@ class MBTISynthesisApp:
 
         # 主框架
         self.main_frame = tk.Frame(self.root, padx=10, pady=10)
-        self.main_frame.pack()
+        self.main_frame.pack(fill='both', expand=True)
 
         # 元素库存显示
         self.elements_label = tk.Label(self.main_frame, text="元素库存：加载中...", font=("Arial", 12))
-        self.elements_label.pack()
+        self.elements_label.pack(anchor='w')
 
         # 物品库存显示
         self.inventory_label = tk.Label(self.main_frame, text="物品库存：空", font=("Arial", 12))
-        self.inventory_label.pack()
+        self.inventory_label.pack(anchor='w')
 
         # 获取元素按钮
         tk.Button(self.main_frame, text="获取元素", command=self.add_elements, font=("Arial", 12)).pack(pady=5)
 
-        # 合成选择
-        tk.Label(self.main_frame, text="选择合成类型：", font=("Arial", 12)).pack()
-        self.synth_type = tk.StringVar(value="initial")
-        tk.Radiobutton(self.main_frame, text="初级物品（随机）", variable=self.synth_type, value="initial").pack()
-        tk.Radiobutton(self.main_frame, text="中级物品", variable=self.synth_type, value="intermediate").pack()
-        tk.Radiobutton(self.main_frame, text="MBTI", variable=self.synth_type, value="mbti").pack()
+        # 查看库存详情按钮
+        tk.Button(self.main_frame, text="查看库存详情", command=self.view_inventory_details, font=("Arial", 12)).pack(
+            pady=5)
 
-        # 合成目标（中级和 MBTI）
-        tk.Label(self.main_frame, text="合成目标（中级/MBTI）：", font=("Arial", 12)).pack()
-        self.target_var = tk.StringVar(value=list(intermediate_recipes.keys())[0])
-        self.target_menu = tk.OptionMenu(self.main_frame, self.target_var, *intermediate_recipes.keys())
-        self.target_menu.pack()
+        # 合成选择
+        tk.Label(self.main_frame, text="选择合成类型：", font=("Arial", 12)).pack(anchor='w')
+        self.synth_type = tk.StringVar(value="initial")
+        tk.Radiobutton(self.main_frame, text="初级物品（随机）", variable=self.synth_type, value="initial",
+                       command=self.update_inputs).pack(anchor='w')
+        tk.Radiobutton(self.main_frame, text="中级物品（随机）", variable=self.synth_type, value="intermediate",
+                       command=self.update_inputs).pack(anchor='w')
+        tk.Radiobutton(self.main_frame, text="MBTI", variable=self.synth_type, value="mbti",
+                       command=self.update_inputs).pack(anchor='w')
 
         # 元素输入（初级合成）
         self.element_inputs = {}
-        tk.Label(self.main_frame, text="输入元素数量（初级合成）：", font=("Arial", 12)).pack()
+        tk.Label(self.main_frame, text="输入元素数量（初级合成）：", font=("Arial", 12)).pack(anchor='w')
         for elem in ['water', 'fire', 'earth', 'air']:
             frame = tk.Frame(self.main_frame)
-            frame.pack()
+            frame.pack(anchor='w')
             tk.Label(frame, text=f"{elem}：").pack(side=tk.LEFT)
             entry = tk.Entry(frame, width=5)
             entry.pack(side=tk.LEFT)
             self.element_inputs[elem] = entry
 
         # 物品选择（中级合成）
-        tk.Label(self.main_frame, text="选择物品（中级合成）：", font=("Arial", 12)).pack()
-        self.item_selections = {}
-        for item in initial_items.keys() | intermediate_recipes.keys():
-            frame = tk.Frame(self.main_frame)
-            frame.pack()
-            tk.Label(frame, text=f"{item}：").pack(side=tk.LEFT)
-            entry = tk.Entry(frame, width=5)
-            entry.pack(side=tk.LEFT)
-            self.item_selections[item] = entry
+        tk.Label(self.main_frame, text="选择物品（中级合成）：", font=("Arial", 12)).pack(anchor='w')
+        self.item_selection_frame = tk.Frame(self.main_frame)
+        self.item_selection_frame.pack(fill='both', expand=True)
+        self.item_checkboxes = {}  # 复选框变量
+        self.item_vars = {}  # 复选框状态
 
         # 合成按钮
         tk.Button(self.main_frame, text="合成！", command=self.synthesize, font=("Arial", 12)).pack(pady=10)
 
         # 结果显示
         self.result_text = tk.Text(self.main_frame, height=8, width=60, font=("Arial", 12))
-        self.result_text.pack()
+        self.result_text.pack(anchor='w')
 
         # 初始更新
         self.update_display()
@@ -104,19 +98,6 @@ class MBTISynthesisApp:
         inventory_str = "物品库存：" + (", ".join(f"{k}: {v}" for k, v in item_counts.items()) if item_counts else "空")
         self.inventory_label.config(text=inventory_str)
 
-        # 更新下拉菜单
-        menu = self.target_menu['menu']
-        menu.delete(0, 'end')
-        targets = (
-            list(intermediate_recipes.keys()) if self.synth_type.get() == "intermediate" else
-            list(mbti_targets.keys()) if self.synth_type.get() == "mbti" else
-            []
-        )
-        for target in targets:
-            menu.add_command(label=target, command=lambda t=target: self.target_var.set(t))
-        if not self.target_var.get() in targets and targets:
-            self.target_var.set(targets[0])
-
     def update_inputs(self, *args):
         """动态更新输入框状态"""
         synth_type = self.synth_type.get()
@@ -126,21 +107,92 @@ class MBTISynthesisApp:
             self.element_inputs[elem].config(state='normal' if synth_type == "initial" else 'disabled')
             self.element_inputs[elem].delete(0, tk.END)
 
-        # 物品选择框
-        for item in self.item_selections:
-            self.item_selections[item].config(state='disabled')
-            self.item_selections[item].delete(0, tk.END)
-        if synth_type == "intermediate" and self.target_var.get() in intermediate_recipes:
-            required = intermediate_recipes[self.target_var.get()]['items']
-            for item in self.item_selections:
-                if item in required:
-                    self.item_selections[item].config(state='normal')
+        # 清理旧复选框
+        for widget in self.item_selection_frame.winfo_children():
+            widget.destroy()
+        self.item_checkboxes = {}
+        self.item_vars = {}
+
+        # 物品选择框（中级合成）
+        if synth_type == "intermediate":
+            if not self.inventory:
+                tk.Label(self.item_selection_frame, text="库存为空，请先合成初级物品！", font=("Arial", 12),
+                         fg="red").pack(anchor='w')
+            else:
+                # 滚动框
+                canvas = tk.Canvas(self.item_selection_frame)
+                scrollbar = tk.Scrollbar(self.item_selection_frame, orient="vertical", command=canvas.yview)
+                scrollable_frame = tk.Frame(canvas)
+
+                scrollable_frame.bind(
+                    "<Configure>",
+                    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+                )
+
+                canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+                canvas.configure(yscrollcommand=scrollbar.set)
+
+                canvas.pack(side="left", fill="both", expand=True)
+                scrollbar.pack(side="right", fill="y")
+
+                tk.Label(scrollable_frame, text="选择具体物品：", font=("Arial", 12)).pack(anchor='w')
+                item_indices = {}
+                for i, item in enumerate(self.inventory, 1):
+                    name = item['name']
+                    index = item_indices.get(name, 0) + 1
+                    item_indices[name] = index
+                    elements_str = ", ".join(f"{k}: {v:.2f}" for k, v in item['elements'].items())
+                    traits = item.get('traits', [])
+                    traits_str = ", ".join(
+                        f"{t} ({item_traits[t]['description']})" for t in traits) if traits else "无属性"
+                    label = f"{name}{index}: {elements_str}, 属性：{traits_str}"
+                    var = tk.BooleanVar()
+                    self.item_vars[id(item)] = var
+                    self.item_checkboxes[id(item)] = tk.Checkbutton(
+                        scrollable_frame,
+                        text=label,
+                        variable=var,
+                        font=("Arial", 10)
+                    )
+                    self.item_checkboxes[id(item)].pack(anchor='w')
+
+    def view_inventory_details(self):
+        """查看库存物品的元素属性和随机属性作用"""
+        if not self.inventory:
+            messagebox.showinfo("库存详情", "库存为空！快去合成吧！")
+            return
+
+        # 创建弹窗
+        details_window = tk.Toplevel(self.root)
+        details_window.title("库存详情")
+        details_window.geometry("600x300")
+
+        # 文本区域
+        text = tk.Text(details_window, height=10, width=70, font=("Arial", 12))
+        text.pack(padx=10, pady=10)
+
+        # 按物品名称分组并编号
+        item_indices = {}
+        for i, item in enumerate(self.inventory, 1):
+            name = item['name']
+            index = item_indices.get(name, 0) + 1
+            item_indices[name] = index
+            elements_str = ", ".join(f"{k}: {v:.2f}" for k, v in item['elements'].items())
+            traits = item.get('traits', [])
+            traits_str = ", ".join(f"{t} ({item_traits[t]['description']})" for t in traits) if traits else "无属性"
+            text.insert(tk.END, f"物品{i} ({name}{index}): {elements_str}, 属性：{traits_str}\n")
+
+        text.config(state='disabled')
+        tk.Button(details_window, text="关闭", command=details_window.destroy, font=("Arial", 12)).pack(pady=5)
+
+        # 提示
+        self.result_text.delete(1.0, tk.END)
+        self.result_text.insert(tk.END, "库存如墨，激情泥浆尽显，查看详情吧！\n")
 
     def synthesize(self):
         """执行合成"""
         self.result_text.delete(1.0, tk.END)
         synth_type = self.synth_type.get()
-        target = self.target_var.get()
 
         if synth_type == "initial":
             input_elements = {}
@@ -159,48 +211,33 @@ class MBTISynthesisApp:
                 self.elements = new_elements
                 self.inventory.append(item)
                 elements_str = ", ".join(f"{k}: {v:.2f}" for k, v in item['elements'].items())
-                self.result_text.insert(tk.END, f"{msg}\n元素组成：{elements_str}\n")
+                traits = item.get('traits', [])
+                traits_str = ", ".join(f"{t} ({item_traits[t]['description']})" for t in traits) if traits else "无属性"
+                self.result_text.insert(tk.END, f"{msg}\n元素组成：{elements_str}\n属性：{traits_str}\n")
             else:
                 self.result_text.insert(tk.END, f"{msg}\n")
 
         elif synth_type == "intermediate":
-            if target not in intermediate_recipes:
-                messagebox.showerror("错误", "请选择有效配方！")
-                return
-            selected_items = {}
-            for item in self.item_selections:
-                try:
-                    count = int(self.item_selections[item].get() or 0)
-                    if count < 0:
-                        raise ValueError
-                    selected_items[item] = count
-                except ValueError:
-                    messagebox.showerror("错误", f"请输入有效的{item}数量！")
-                    return
-            required = intermediate_recipes[target]['items']
-            for item in selected_items:
-                if selected_items[item] > 0 and item not in required:
-                    messagebox.showerror("错误", f"{target}无需{item}！")
-                    return
-            item_counts = {}
-            for item in self.inventory:
-                item_counts[item['name']] = item_counts.get(item['name'], 0) + 1
-            for item, count in selected_items.items():
-                if item_counts.get(item, 0) < count:
-                    messagebox.showerror("错误", f"{item}库存不足！")
-                    return
-            input_inventory = []
-            for item, count in selected_items.items():
-                for _ in range(count):
-                    for inv_item in self.inventory:
-                        if inv_item['name'] == item:
-                            input_inventory.append(inv_item)
+            # 收集勾选物品
+            selected_items = []
+            for item_id, var in self.item_vars.items():
+                if var.get():
+                    for item in self.inventory:
+                        if id(item) == item_id:
+                            selected_items.append(item)
                             break
-            item, new_inventory, msg = synthesize_intermediate(input_inventory, target)
+            if not selected_items:
+                messagebox.showerror("错误", "请至少选择一个物品！")
+                return
+
+            item, new_inventory, msg = synthesize_intermediate(self.inventory, selected_items)
             if item:
                 self.inventory = new_inventory
                 self.inventory.append(item)
-                self.result_text.insert(tk.END, f"{msg}\n获得：{item['name']}\n")
+                elements_str = ", ".join(f"{k}: {v:.2f}" for k, v in item['elements'].items())
+                traits = item.get('traits', [])
+                traits_str = ", ".join(f"{t} ({item_traits[t]['description']})" for t in traits) if traits else "无属性"
+                self.result_text.insert(tk.END, f"{msg}\n元素组成：{elements_str}\n属性：{traits_str}\n")
             else:
                 self.result_text.insert(tk.END, f"{msg}\n")
 
@@ -225,6 +262,7 @@ class MBTISynthesisApp:
                 self.result_text.insert(tk.END, f"合成失败！{hint}\n")
 
         self.update_display()
+        self.update_inputs()
 
 
 if __name__ == "__main__":
