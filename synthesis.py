@@ -1,5 +1,6 @@
 # synthesis.py
 # 核心合成逻辑：初级随机合成（100%元素规则，中文名称）、中级随机合成（自动配方匹配）、MBTI随机合成（仅中级物品，保底机制，存储历史）
+# TODO 一个一级物品也可以合成中级物品，需要修改
 
 from data import default_weights, initial_items, intermediate_recipes, mbti_targets, interactions, item_traits
 from utils import normalize_elements, normalize_weights, apply_disturbance, generate_hint
