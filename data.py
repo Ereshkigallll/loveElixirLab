@@ -1,9 +1,9 @@
 # data.py
-# 存储配方、权重、MBTI目标，新增中级配方、削弱属性、item_type，物品名称改为中文
+# 存储配方、权重、MBTI目标，新增中级配方、削弱属性、item_type，物品名称为中文，MBTI比例为范围，新增词条属性，更新一级物品比例
 
 import random
 
-# 默认权重
+# 默认权重：定义元素到 MBTI 属性的映射，用于情感属性（traits）分配
 default_weights = {
     'water': {'F': 0.55, 'I': 0.25, 'N': 0.15, 'J': 0.05},
     'fire': {'E': 0.55, 'S': 0.25, 'N': 0.15, 'T': 0.05},
@@ -11,283 +11,579 @@ default_weights = {
     'air': {'T': 0.55, 'P': 0.25, 'S': 0.15, 'N': 0.05}
 }
 
-# 初级物品范围
+# 一级物品（初级物品）
 initial_items = {
-    '水晶': {
-        'main': ['water'],
-        'ranges': {'water': (0.7, 0.9), 'fire': (0, 0.3), 'earth': (0, 0.3), 'air': (0, 0.3)},
-        'item_type': 'initial'
-    },
-    '火焰': {
-        'main': ['fire'],
-        'ranges': {'fire': (0.7, 0.9), 'water': (0, 0.3), 'earth': (0, 0.3), 'air': (0, 0.3)},
-        'item_type': 'initial'
-    },
-    '泥浆': {
-        'main': ['earth', 'water'],
-        'ranges': {'earth': (0.4, 0.6), 'water': (0.3, 0.5), 'fire': (0, 0.2), 'air': (0, 0.2)},
-        'item_type': 'initial'
-    },
-    '气流': {
+    # 风系新物品
+    '风茧丝': {
         'main': ['air'],
-        'ranges': {'air': (0.7, 0.9), 'water': (0, 0.3), 'fire': (0, 0.3), 'earth': (0, 0.3)},
+        'ranges': {'air': (0.75, 0.85), 'water': (0.1, 0.2), 'earth': (0, 0.1), 'fire': (0, 0.1)},
         'item_type': 'initial'
     },
-    '矿石': {
-        'main': ['earth'],
-        'ranges': {'earth': (0.7, 0.9), 'water': (0, 0.3), 'fire': (0, 0.3), 'air': (0, 0.3)},
+    '干桑片': {
+        'main': ['air', 'earth'],
+        'ranges': {'air': (0.7, 0.8), 'earth': (0.15, 0.25), 'water': (0, 0.1), 'fire': (0, 0.1)},
         'item_type': 'initial'
     },
-    '火花': {
+    '晨风露水': {
+        'main': ['air', 'water'],
+        'ranges': {'air': (0.65, 0.75), 'water': (0.2, 0.3), 'earth': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '风信子叶': {
+        'main': ['air', 'water'],
+        'ranges': {'air': (0.7, 0.8), 'water': (0.15, 0.25), 'earth': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '空石屑': {
+        'main': ['air', 'earth'],
+        'ranges': {'air': (0.65, 0.75), 'earth': (0.2, 0.3), 'water': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '鸣砂粒': {
+        'main': ['air', 'earth'],
+        'ranges': {'air': (0.7, 0.8), 'earth': (0.15, 0.25), 'water': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '螺纹叶片': {
+        'main': ['air', 'water'],
+        'ranges': {'air': (0.75, 0.85), 'water': (0.1, 0.2), 'earth': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '风引茎': {
+        'main': ['air'],
+        'ranges': {'air': (0.8, 0.9), 'water': (0.05, 0.15), 'earth': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    # 火系新物品
+    '赤果皮': {
+        'main': ['fire', 'earth'],
+        'ranges': {'fire': (0.7, 0.8), 'earth': (0.15, 0.25), 'water': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '焰藤须': {
         'main': ['fire', 'air'],
-        'ranges': {'fire': (0.4, 0.6), 'air': (0.3, 0.5), 'water': (0, 0.2), 'earth': (0, 0.2)},
+        'ranges': {'fire': (0.75, 0.85), 'air': (0.1, 0.2), 'water': (0, 0.1), 'earth': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '火山碎晶': {
+        'main': ['fire', 'earth'],
+        'ranges': {'fire': (0.65, 0.75), 'earth': (0.2, 0.3), 'water': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '熔岩砂': {
+        'main': ['fire', 'earth'],
+        'ranges': {'fire': (0.7, 0.8), 'earth': (0.15, 0.25), 'water': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '火狐绒毛': {
+        'main': ['fire', 'air'],
+        'ranges': {'fire': (0.7, 0.8), 'air': (0.15, 0.25), 'water': (0, 0.1), 'earth': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '狐焰脂': {
+        'main': ['fire', 'water'],
+        'ranges': {'fire': (0.75, 0.85), 'water': (0.1, 0.2), 'earth': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '泉香片': {
+        'main': ['fire', 'water'],
+        'ranges': {'fire': (0.65, 0.75), 'water': (0.2, 0.3), 'earth': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '温石露': {
+        'main': ['fire', 'water'],
+        'ranges': {'fire': (0.65, 0.75), 'water': (0.2, 0.3), 'earth': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    # 水系新物品
+    '露心液': {
+        'main': ['water', 'air'],
+        'ranges': {'water': (0.75, 0.85), 'air': (0.1, 0.2), 'earth': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '雾瓣片': {
+        'main': ['water', 'air'],
+        'ranges': {'water': (0.7, 0.8), 'air': (0.15, 0.25), 'earth': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '潮音砂': {
+        'main': ['water', 'earth'],
+        'ranges': {'water': (0.7, 0.8), 'earth': (0.15, 0.25), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '旧贝母片': {
+        'main': ['water', 'earth'],
+        'ranges': {'water': (0.65, 0.75), 'earth': (0.2, 0.3), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '洗银水': {
+        'main': ['water'],
+        'ranges': {'water': (0.8, 0.9), 'air': (0.05, 0.15), 'earth': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '镜心银屑': {
+        'main': ['water', 'earth'],
+        'ranges': {'water': (0.65, 0.75), 'earth': (0.2, 0.3), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '龙鳞末': {
+        'main': ['water', 'earth'],
+        'ranges': {'water': (0.7, 0.8), 'earth': (0.15, 0.25), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '骨水渍': {
+        'main': ['water', 'fire'],
+        'ranges': {'water': (0.75, 0.85), 'fire': (0.1, 0.2), 'earth': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    # 土系新物品
+    '眠砂粒': {
+        'main': ['earth', 'air'],
+        'ranges': {'earth': (0.7, 0.8), 'air': (0.15, 0.25), 'water': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '岩皮粉': {
+        'main': ['earth', 'water'],
+        'ranges': {'earth': (0.75, 0.85), 'water': (0.1, 0.2), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '古蕨叶脉': {
+        'main': ['earth', 'water'],
+        'ranges': {'earth': (0.65, 0.75), 'water': (0.2, 0.3), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '土香粉': {
+        'main': ['earth', 'fire'],
+        'ranges': {'earth': (0.7, 0.8), 'fire': (0.15, 0.25), 'water': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '铜绿皮': {
+        'main': ['earth', 'water'],
+        'ranges': {'earth': (0.75, 0.85), 'water': (0.1, 0.2), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '星纹芯': {
+        'main': ['earth', 'fire'],
+        'ranges': {'earth': (0.8, 0.9), 'fire': (0.05, 0.15), 'water': (0, 0.1), 'air': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '墨泥屑': {
+        'main': ['earth', 'water'],
+        'ranges': {'earth': (0.7, 0.8), 'water': (0.15, 0.25), 'air': (0, 0.1), 'fire': (0, 0.1)},
+        'item_type': 'initial'
+    },
+    '蓝树根': {
+        'main': ['earth', 'water'],
+        'ranges': {'earth': (0.65, 0.75), 'water': (0.2, 0.3), 'air': (0, 0.1), 'fire': (0, 0.1)},
         'item_type': 'initial'
     }
 }
 
-# 属性定义（增强和削弱）
-item_traits = {
-    '激情': {
-        'mbti': 'E',
-        'elements': ['fire'],
-        'weight': 0.8,
-        'effect': {'fire': {'E': 0.05}},
-        'description': '火元素 外向 属性增加 5%'
-    },
-    '内省': {
-        'mbti': 'I',
+# 词条定义（entries）：影响合成机制，如元素占比、副产物概率
+item_entries = {
+    '水元素增幅': {
         'elements': ['water'],
         'weight': 0.8,
-        'effect': {'water': {'I': 0.05}},
-        'description': '水元素 内向 属性增加 5%'
+        'effect': {'water': 0.10},
+        'description': '下次合成水元素比例 +10%'
     },
-    '稳定': {
-        'mbti': 'S',
-        'elements': ['earth'],
-        'weight': 0.8,
-        'effect': {'earth': {'S': 0.05}},
-        'description': '土元素 感觉 属性增加 5%'
-    },
-    '创造': {
-        'mbti': 'N',
-        'elements': ['fire', 'water'],
-        'weight': 0.4,
-        'effect': {'fire': {'N': 0.05}, 'water': {'N': 0.05}},
-        'description': '火、水元素 直觉 属性增加 5%'
-    },
-    '理性': {
-        'mbti': 'T',
-        'elements': ['air'],
-        'weight': 0.8,
-        'effect': {'air': {'T': 0.05}},
-        'description': '风元素 思维 属性增加 5%'
-    },
-    '情感': {
-        'mbti': 'F',
-        'elements': ['water', 'earth'],
-        'weight': 0.4,
-        'effect': {'water': {'F': 0.05}, 'earth': {'F': 0.05}},
-        'description': '水、土元素 情感 属性增加 5%'
-    },
-    '责任': {
-        'mbti': 'J',
-        'elements': ['earth'],
-        'weight': 0.8,
-        'effect': {'earth': {'J': 0.05}},
-        'description': '土元素 判断 属性增加 5%'
-    },
-    '自由': {
-        'mbti': 'P',
-        'elements': ['air'],
-        'weight': 0.8,
-        'effect': {'air': {'P': 0.05}},
-        'description': '风元素 感知 属性增加 5%'
-    },
-    '疲惫': {
-        'mbti': 'E',
+    '火元素增幅': {
         'elements': ['fire'],
-        'weight': 0.4,
-        'effect': {'fire': {'E': -0.05}},
-        'description': '火元素 外向 属性减少 5%'
+        'weight': 0.8,
+        'effect': {'fire': 0.10},
+        'description': '下次合成火元素比例 +10%'
     },
-    '迷茫': {
-        'mbti': 'I',
+    '土元素增幅': {
+        'elements': ['earth'],
+        'weight': 0.8,
+        'effect': {'earth': 0.10},
+        'description': '下次合成土元素比例 +10%'
+    },
+    '风元素增幅': {
+        'elements': ['air'],
+        'weight': 0.8,
+        'effect': {'air': 0.10},
+        'description': '下次合成风元素比例 +10%'
+    },
+    '副产物增益': {
+        'elements': ['water', 'fire', 'earth', 'air'],
+        'weight': 0.4,
+        'effect': {'byproduct': 0.20},
+        'description': '下次合成副产物概率 +20%'
+    },
+    '水元素节约': {
         'elements': ['water'],
-        'weight': 0.4,
-        'effect': {'water': {'I': -0.05}},
-        'description': '水元素 内向 属性减少 5%'
+        'weight': 0.6,
+        'effect': {'water_save': 0.10},
+        'description': '下次合成水元素消耗 -10%'
     },
-    '固执': {
-        'mbti': 'S',
+    '火元素节约': {
+        'elements': ['fire'],
+        'weight': 0.6,
+        'effect': {'fire_save': 0.10},
+        'description': '下次合成火元素消耗 -10%'
+    },
+    '土元素节约': {
         'elements': ['earth'],
-        'weight': 0.4,
-        'effect': {'earth': {'S': -0.05}},
-        'description': '土元素 感觉 属性减少 5%'
+        'weight': 0.6,
+        'effect': {'earth_save': 0.10},
+        'description': '下次合成土元素消耗 -10%'
     },
-    '浮躁': {
-        'mbti': 'N',
-        'elements': ['fire', 'water'],
-        'weight': 0.2,
-        'effect': {'fire': {'N': -0.05}, 'water': {'N': -0.05}},
-        'description': '火、水元素 直觉 属性减少 5%'
-    },
-    '冷漠': {
-        'mbti': 'T',
+    '风元素节约': {
         'elements': ['air'],
-        'weight': 0.4,
-        'effect': {'air': {'T': -0.05}},
-        'description': '风元素 思维 属性减少 5%'
-    },
-    '混乱': {
-        'mbti': 'F',
-        'elements': ['water', 'earth'],
-        'weight': 0.2,
-        'effect': {'water': {'F': -0.05}, 'earth': {'F': -0.05}},
-        'description': '水、土元素 情感 属性减少 5%'
-    },
-    '拖延': {
-        'mbti': 'J',
-        'elements': ['earth'],
-        'weight': 0.4,
-        'effect': {'earth': {'J': -0.05}},
-        'description': '土元素 判断 属性减少 5%'
-    },
-    '散漫': {
-        'mbti': 'P',
-        'elements': ['air'],
-        'weight': 0.4,
-        'effect': {'air': {'P': -0.05}},
-        'description': '风元素 感知 属性减少 5%'
+        'weight': 0.6,
+        'effect': {'air_save': 0.10},
+        'description': '下次合成风元素消耗 -10%'
     }
 }
 
 # 中级物品配方（15种）
+# 中级物品配方（二级物品）
 intermediate_recipes = {
-    '深海之心': {
-        'items': {'水晶': 2, '火焰': 1},
-        'elements': {'water': 0.7, 'earth': 0.2, 'fire': 0.1},
-        'trait': 'emotional_resonance',
-        'ranges': {'water': (0.6, 0.8), 'earth': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)},
+    # 风系
+    '风茧纸': {
+        'elements': {'air': 0.6, 'earth': 0.2, 'water': 0.1, 'fire': 0.1},
+        'ranges': {'air': (0.5, 0.7), 'earth': (0.1, 0.3), 'water': (0, 0.2), 'fire': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '烈焰水晶': {
-        'items': {'火焰': 2, '水晶': 1},
-        'elements': {'fire': 0.6, 'water': 0.2, 'air': 0.2},
-        'trait': 'intuitive_spark',
-        'ranges': {'fire': (0.5, 0.7), 'water': (0.1, 0.3), 'air': (0.1, 0.3), 'earth': (0, 0.2)},
+    '羽叶香': {
+        'elements': {'air': 0.5, 'water': 0.3, 'earth': 0.1, 'fire': 0.1},
+        'ranges': {'air': (0.4, 0.6), 'water': (0.2, 0.4), 'earth': (0, 0.2), 'fire': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '星火精华': {
-        'items': {'火花': 1, '火焰': 1, '气流': 1},
-        'elements': {'fire': 0.5, 'air': 0.3, 'water': 0.1, 'earth': 0.1},
-        'trait': 'creative_flare',
-        'ranges': {'fire': (0.4, 0.6), 'air': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)},
+    '风琴石': {
+        'elements': {'air': 0.5, 'earth': 0.3, 'water': 0.1, 'fire': 0.1},
+        'ranges': {'air': (0.4, 0.6), 'earth': (0.2, 0.4), 'water': (0, 0.2), 'fire': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '月影之水': {
-        'items': {'泥浆': 2, '水晶': 1},
-        'elements': {'water': 0.5, 'earth': 0.3, 'fire': 0.1, 'air': 0.1},
-        'trait': 'empathic_flow',
-        'ranges': {'water': (0.4, 0.6), 'earth': (0.2, 0.4), 'fire': (0, 0.2), 'air': (0, 0.2)},
+    '螺羽风叶': {
+        'elements': {'air': 0.6, 'water': 0.2, 'earth': 0.1, 'fire': 0.1},
+        'ranges': {'air': (0.5, 0.7), 'water': (0.1, 0.3), 'earth': (0, 0.2), 'fire': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '地心矿核': {
-        'items': {'矿石': 2, '泥浆': 1},
-        'elements': {'earth': 0.6, 'water': 0.2, 'fire': 0.1, 'air': 0.1},
-        'trait': 'steadfast_duty',
-        'ranges': {'earth': (0.5, 0.7), 'water': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)},
+    '银耳蘑孢': {
+        'elements': {'air': 0.5, 'water': 0.2, 'earth': 0.2, 'fire': 0.1},
+        'ranges': {'air': (0.4, 0.6), 'water': (0.1, 0.3), 'earth': (0.1, 0.3), 'fire': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '风之精魄': {
-        'items': {'气流': 2, '火花': 1},
-        'elements': {'air': 0.5, 'fire': 0.3, 'water': 0.1, 'earth': 0.1},
-        'trait': 'freedom_breeze',
-        'ranges': {'air': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)},
+    '云青矿': {
+        'elements': {'air': 0.5, 'earth': 0.3, 'water': 0.1, 'fire': 0.1},
+        'ranges': {'air': (0.4, 0.6), 'earth': (0.2, 0.4), 'water': (0, 0.2), 'fire': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '碧波灵液': {
-        'items': {'水晶': 2, '泥浆': 1},
-        'elements': {'water': 0.6, 'earth': 0.2, 'fire': 0.1, 'air': 0.1},
-        'trait': 'empathic_tide',
-        'ranges': {'water': (0.5, 0.7), 'earth': (0.1, 0.3), 'fire': (0, 0.2), 'air': (0, 0.2)},
+    # 火系
+    '赤焰果': {
+        'elements': {'fire': 0.6, 'earth': 0.2, 'water': 0.1, 'air': 0.1},
+        'ranges': {'fire': (0.5, 0.7), 'earth': (0.1, 0.3), 'water': (0, 0.2), 'air': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '炽焰核心': {
-        'items': {'火焰': 2, '火花': 1},
-        'elements': {'fire': 0.6, 'air': 0.2, 'water': 0.1, 'earth': 0.1},
-        'trait': 'passionate_flare',
-        'ranges': {'fire': (0.5, 0.7), 'air': (0.1, 0.3), 'water': (0, 0.2), 'earth': (0, 0.2)},
-        'item_type': 'intermediate'
-    },
-    '岩脉精华': {
-        'items': {'矿石': 2, '火焰': 1},
-        'elements': {'earth': 0.5, 'fire': 0.3, 'water': 0.1, 'air': 0.1},
-        'trait': 'dutiful_rock',
-        'ranges': {'earth': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'air': (0, 0.2)},
-        'item_type': 'intermediate'
-    },
-    '星辉碎片': {
-        'items': {'水晶': 1, '火花': 1, '气流': 1},
-        'elements': {'water': 0.3, 'fire': 0.3, 'air': 0.3, 'earth': 0.1},
-        'trait': 'creative_glow',
-        'ranges': {'water': (0.2, 0.4), 'fire': (0.2, 0.4), 'air': (0.2, 0.4), 'earth': (0, 0.2)},
-        'item_type': 'intermediate'
-    },
-    '幽泉之息': {
-        'items': {'泥浆': 2, '气流': 1},
-        'elements': {'water': 0.4, 'earth': 0.3, 'air': 0.2, 'fire': 0.1},
-        'trait': 'introspective_mist',
-        'ranges': {'water': (0.3, 0.5), 'earth': (0.2, 0.4), 'air': (0.1, 0.3), 'fire': (0, 0.2)},
-        'item_type': 'intermediate'
-    },
-    '熔岩晶核': {
-        'items': {'火焰': 2, '矿石': 1},
+    '灰烬琉璃': {
         'elements': {'fire': 0.5, 'earth': 0.3, 'water': 0.1, 'air': 0.1},
-        'trait': 'stable_heat',
         'ranges': {'fire': (0.4, 0.6), 'earth': (0.2, 0.4), 'water': (0, 0.2), 'air': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '雾隐精华': {
-        'items': {'水晶': 2, '气流': 1},
-        'elements': {'water': 0.5, 'air': 0.3, 'earth': 0.1, 'fire': 0.1},
-        'trait': 'rational_mist',
-        'ranges': {'water': (0.4, 0.6), 'air': (0.2, 0.4), 'earth': (0, 0.2), 'fire': (0, 0.2)},
+    '星火绒': {
+        'elements': {'fire': 0.5, 'air': 0.3, 'water': 0.1, 'earth': 0.1},
+        'ranges': {'fire': (0.4, 0.6), 'air': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '地焰之种': {
-        'items': {'矿石': 1, '火焰': 1, '泥浆': 1},
-        'elements': {'earth': 0.4, 'fire': 0.3, 'water': 0.2, 'air': 0.1},
-        'trait': 'empathic_earth',
-        'ranges': {'earth': (0.3, 0.5), 'fire': (0.2, 0.4), 'water': (0.1, 0.3), 'air': (0, 0.2)},
+    '温泉叶': {
+        'elements': {'fire': 0.5, 'water': 0.3, 'earth': 0.1, 'air': 0.1},
+        'ranges': {'fire': (0.4, 0.6), 'water': (0.2, 0.4), 'earth': (0, 0.2), 'air': (0, 0.2)},
         'item_type': 'intermediate'
     },
-    '灵风结晶': {
-        'items': {'火花': 2, '气流': 1},
-        'elements': {'air': 0.4, 'fire': 0.3, 'water': 0.1, 'earth': 0.2},
-        'trait': 'free_spirit',
-        'ranges': {'air': (0.3, 0.5), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0.1, 0.3)},
+    '火霞绫': {
+        'elements': {'fire': 0.6, 'water': 0.2, 'air': 0.1, 'earth': 0.1},
+        'ranges': {'fire': (0.5, 0.7), 'water': (0.1, 0.3), 'air': (0, 0.2), 'earth': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '焰尾蠊': {
+        'elements': {'fire': 0.5, 'earth': 0.2, 'air': 0.2, 'water': 0.1},
+        'ranges': {'fire': (0.4, 0.6), 'earth': (0.1, 0.3), 'air': (0.1, 0.3), 'water': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    # 水系
+    '蓝滴花': {
+        'elements': {'water': 0.6, 'air': 0.2, 'earth': 0.1, 'fire': 0.1},
+        'ranges': {'water': (0.5, 0.7), 'air': (0.1, 0.3), 'earth': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '潮声贝': {
+        'elements': {'water': 0.5, 'earth': 0.3, 'air': 0.1, 'fire': 0.1},
+        'ranges': {'water': (0.4, 0.6), 'earth': (0.2, 0.4), 'air': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '月水镜': {
+        'elements': {'water': 0.5, 'earth': 0.2, 'air': 0.2, 'fire': 0.1},
+        'ranges': {'water': (0.4, 0.6), 'earth': (0.1, 0.3), 'air': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '沉水龙鳞': {
+        'elements': {'water': 0.5, 'earth': 0.2, 'fire': 0.2, 'air': 0.1},
+        'ranges': {'water': (0.4, 0.6), 'earth': (0.1, 0.3), 'fire': (0.1, 0.3), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '潋青苔': {
+        'elements': {'water': 0.5, 'earth': 0.2, 'air': 0.2, 'fire': 0.1},
+        'ranges': {'water': (0.4, 0.6), 'earth': (0.1, 0.3), 'air': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '澄灵蜓': {
+        'elements': {'water': 0.6, 'air': 0.2, 'earth': 0.1, 'fire': 0.1},
+        'ranges': {'water': (0.5, 0.7), 'air': (0.1, 0.3), 'earth': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    # 土系
+    '眠砂石': {
+        'elements': {'earth': 0.6, 'air': 0.2, 'water': 0.1, 'fire': 0.1},
+        'ranges': {'earth': (0.5, 0.7), 'air': (0.1, 0.3), 'water': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '蕨影纸': {
+        'elements': {'earth': 0.5, 'water': 0.2, 'fire': 0.2, 'air': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'water': (0.1, 0.3), 'fire': (0.1, 0.3), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '苔纹矿': {
+        'elements': {'earth': 0.5, 'water': 0.3, 'air': 0.1, 'fire': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'water': (0.2, 0.4), 'air': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '铜骨枝': {
+        'elements': {'earth': 0.5, 'fire': 0.2, 'water': 0.2, 'air': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'fire': (0.1, 0.3), 'water': (0.1, 0.3), 'air': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '墨根石': {
+        'elements': {'earth': 0.5, 'water': 0.3, 'air': 0.1, 'fire': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'water': (0.2, 0.4), 'air': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'intermediate'
+    },
+    '伏地蜚': {
+        'elements': {'earth': 0.5, 'air': 0.2, 'fire': 0.2, 'water': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'air': (0.1, 0.3), 'fire': (0.1, 0.3), 'water': (0, 0.2)},
         'item_type': 'intermediate'
     }
 }
 
-# MBTI 目标比例
+# 三级物品配方（由二级物品合成，用于 MBTI 合成）
+third = {
+    # 风系
+    '风焰颂笛': {
+        'elements': {'air': 0.5, 'fire': 0.3, 'water': 0.1, 'earth': 0.1},
+        'ranges': {'air': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'earth': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '飞信': {
+        'elements': {'air': 0.5, 'water': 0.2, 'earth': 0.2, 'fire': 0.1},
+        'ranges': {'air': (0.4, 0.6), 'water': (0.1, 0.3), 'earth': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '螺簧录音片': {
+        'elements': {'air': 0.4, 'earth': 0.3, 'water': 0.2, 'fire': 0.1},
+        'ranges': {'air': (0.3, 0.5), 'earth': (0.2, 0.4), 'water': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '灵岚结晶': {
+        'elements': {'air': 0.5, 'earth': 0.2, 'water': 0.2, 'fire': 0.1},
+        'ranges': {'air': (0.4, 0.6), 'earth': (0.1, 0.3), 'water': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    },
+    # 火系
+    '烬露珠': {
+        'elements': {'fire': 0.5, 'water': 0.2, 'earth': 0.2, 'air': 0.1},
+        'ranges': {'fire': (0.4, 0.6), 'water': (0.1, 0.3), 'earth': (0.1, 0.3), 'air': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '炽羽砂钟': {
+        'elements': {'fire': 0.4, 'air': 0.3, 'earth': 0.2, 'water': 0.1},
+        'ranges': {'fire': (0.3, 0.5), 'air': (0.2, 0.4), 'earth': (0.1, 0.3), 'water': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '眠梦热砂枕': {
+        'elements': {'fire': 0.4, 'earth': 0.3, 'air': 0.2, 'water': 0.1},
+        'ranges': {'fire': (0.3, 0.5), 'earth': (0.2, 0.4), 'air': (0.1, 0.3), 'water': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '焰息披帛': {
+        'elements': {'fire': 0.5, 'water': 0.2, 'air': 0.2, 'earth': 0.1},
+        'ranges': {'fire': (0.4, 0.6), 'water': (0.1, 0.3), 'air': (0.1, 0.3), 'earth': (0, 0.2)},
+        'item_type': 'third'
+    },
+    # 水系
+    '晨雾诗笺': {
+        'elements': {'water': 0.5, 'air': 0.3, 'earth': 0.1, 'fire': 0.1},
+        'ranges': {'water': (0.4, 0.6), 'air': (0.2, 0.4), 'earth': (0, 0.2), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '泪花幻镜': {
+        'elements': {'water': 0.4, 'fire': 0.3, 'earth': 0.2, 'air': 0.1},
+        'ranges': {'water': (0.3, 0.5), 'fire': (0.2, 0.4), 'earth': (0.1, 0.3), 'air': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '信歌风铃': {
+        'elements': {'water': 0.5, 'air': 0.2, 'earth': 0.2, 'fire': 0.1},
+        'ranges': {'water': (0.4, 0.6), 'air': (0.1, 0.3), 'earth': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '梦睡莲': {
+        'elements': {'water': 0.5, 'air': 0.2, 'earth': 0.2, 'fire': 0.1},
+        'ranges': {'water': (0.4, 0.6), 'air': (0.1, 0.3), 'earth': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    },
+    # 土系
+    '云岩灯': {
+        'elements': {'earth': 0.5, 'air': 0.2, 'water': 0.2, 'fire': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'air': (0.1, 0.3), 'water': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '迷途引针': {
+        'elements': {'earth': 0.4, 'air': 0.3, 'fire': 0.2, 'water': 0.1},
+        'ranges': {'earth': (0.3, 0.5), 'air': (0.2, 0.4), 'fire': (0.1, 0.3), 'water': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '炉眠香': {
+        'elements': {'earth': 0.5, 'fire': 0.3, 'water': 0.1, 'air': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'fire': (0.2, 0.4), 'water': (0, 0.2), 'air': (0, 0.2)},
+        'item_type': 'third'
+    },
+    '地纹巡记石': {
+        'elements': {'earth': 0.5, 'water': 0.2, 'air': 0.2, 'fire': 0.1},
+        'ranges': {'earth': (0.4, 0.6), 'water': (0.1, 0.3), 'air': (0.1, 0.3), 'fire': (0, 0.2)},
+        'item_type': 'third'
+    }
+}
+
+# MBTI 目标比例范围
 mbti_targets = {
-    'ISFJ': {'earth': 0.5, 'water': 0.4, 'fire': 0.05, 'air': 0.05},
-    'ESFJ': {'water': 0.45, 'earth': 0.4, 'fire': 0.1, 'air': 0.05},
-    'ISTJ': {'earth': 0.55, 'air': 0.3, 'water': 0.1, 'fire': 0.05},
-    'ISFP': {'water': 0.4, 'earth': 0.35, 'air': 0.2, 'fire': 0.05},
-    'ESTJ': {'earth': 0.4, 'air': 0.3, 'fire': 0.2, 'water': 0.1},
-    'ESFP': {'water': 0.35, 'fire': 0.3, 'air': 0.25, 'earth': 0.1},
-    'ENFP': {'fire': 0.4, 'water': 0.3, 'air': 0.2, 'earth': 0.1},
-    'ISTP': {'air': 0.4, 'earth': 0.35, 'fire': 0.15, 'water': 0.1},
-    'INFP': {'water': 0.45, 'fire': 0.25, 'air': 0.2, 'earth': 0.1},
-    'ESTP': {'air': 0.35, 'fire': 0.3, 'earth': 0.25, 'water': 0.1},
-    'INTP': {'air': 0.45, 'fire': 0.25, 'earth': 0.2, 'water': 0.1},
-    'ENTP': {'fire': 0.35, 'air': 0.3, 'water': 0.2, 'earth': 0.15},
-    'ENFJ': {'water': 0.4, 'fire': 0.3, 'earth': 0.15, 'air': 0.15},
-    'INTJ': {'air': 0.4, 'fire': 0.25, 'water': 0.2, 'earth': 0.15},
-    'ENTJ': {'fire': 0.4, 'air': 0.3, 'earth': 0.15, 'water': 0.15},
-    'INFJ': {'water': 0.45, 'fire': 0.25, 'air': 0.2, 'earth': 0.1}
+    'ISFJ': {
+        'ranges': {
+            'earth': (0.45, 0.55),
+            'water': (0.35, 0.45),
+            'fire': (0.0, 0.1),
+            'air': (0.0, 0.1)
+        }
+    },
+    'ESFJ': {
+        'ranges': {
+            'water': (0.40, 0.50),
+            'earth': (0.35, 0.45),
+            'fire': (0.05, 0.15),
+            'air': (0.0, 0.1)
+        }
+    },
+    'ISTJ': {
+        'ranges': {
+            'earth': (0.50, 0.60),
+            'air': (0.25, 0.35),
+            'water': (0.05, 0.15),
+            'fire': (0.0, 0.1)
+        }
+    },
+    'ISFP': {
+        'ranges': {
+            'water': (0.35, 0.45),
+            'earth': (0.30, 0.40),
+            'air': (0.15, 0.25),
+            'fire': (0.0, 0.1)
+        }
+    },
+    'ESTJ': {
+        'ranges': {
+            'earth': (0.35, 0.45),
+            'air': (0.25, 0.35),
+            'fire': (0.15, 0.25),
+            'water': (0.05, 0.15)
+        }
+    },
+    'ESFP': {
+        'ranges': {
+            'fire': (0.25, 0.35),
+            'water': (0.30, 0.40),
+            'air': (0.20, 0.30),
+            'earth': (0.05, 0.15)
+        }
+    },
+    'ENFP': {
+        'ranges': {
+            'fire': (0.35, 0.45),
+            'water': (0.25, 0.35),
+            'air': (0.15, 0.25),
+            'earth': (0.05, 0.15)
+        }
+    },
+    'ISTP': {
+        'ranges': {
+            'air': (0.35, 0.45),
+            'earth': (0.30, 0.40),
+            'fire': (0.10, 0.20),
+            'water': (0.05, 0.15)
+        }
+    },
+    'INFP': {
+        'ranges': {
+            'water': (0.40, 0.50),
+            'fire': (0.20, 0.30),
+            'air': (0.15, 0.25),
+            'earth': (0.05, 0.15)
+        }
+    },
+    'ESTP': {
+        'ranges': {
+            'air': (0.30, 0.40),
+            'fire': (0.25, 0.35),
+            'earth': (0.20, 0.30),
+            'water': (0.05, 0.15)
+        }
+    },
+    'INTP': {
+        'ranges': {
+            'air': (0.40, 0.50),
+            'fire': (0.20, 0.30),
+            'earth': (0.15, 0.25),
+            'water': (0.05, 0.15)
+        }
+    },
+    'ENTP': {
+        'ranges': {
+            'fire': (0.30, 0.40),
+            'air': (0.25, 0.35),
+            'water': (0.15, 0.25),
+            'earth': (0.10, 0.20)
+        }
+    },
+    'ENFJ': {
+        'ranges': {
+            'water': (0.35, 0.45),
+            'fire': (0.25, 0.35),
+            'earth': (0.10, 0.20),
+            'air': (0.10, 0.20)
+        }
+    },
+    'INTJ': {
+        'ranges': {
+            'air': (0.35, 0.45),
+            'fire': (0.20, 0.30),
+            'water': (0.15, 0.25),
+            'earth': (0.10, 0.20)
+        }
+    },
+    'ENTJ': {
+        'ranges': {
+            'fire': (0.35, 0.45),
+            'air': (0.25, 0.35),
+            'earth': (0.10, 0.20),
+            'water': (0.10, 0.20)
+        }
+    },
+    'INFJ': {
+        'ranges': {
+            'water': (0.40, 0.50),
+            'fire': (0.20, 0.30),
+            'air': (0.15, 0.25),
+            'earth': (0.05, 0.15)
+        }
+    }
 }
 
 # 元素交互
