@@ -185,55 +185,55 @@ item_entries = {
         'elements': ['water'],
         'weight': 0.8,
         'effect': {'water': 0.10},
-        'description': '下次合成水元素比例 +10%'
+        'description': '下次合成水元素比例 +10%',
     },
     '火元素增幅': {
         'elements': ['fire'],
         'weight': 0.8,
         'effect': {'fire': 0.10},
-        'description': '下次合成火元素比例 +10%'
+        'description': '下次合成火元素比例 +10%',
     },
     '土元素增幅': {
         'elements': ['earth'],
         'weight': 0.8,
         'effect': {'earth': 0.10},
-        'description': '下次合成土元素比例 +10%'
+        'description': '下次合成土元素比例 +10%',
     },
     '风元素增幅': {
         'elements': ['air'],
         'weight': 0.8,
         'effect': {'air': 0.10},
-        'description': '下次合成风元素比例 +10%'
+        'description': '下次合成风元素比例 +10%',
     },
     '副产物增益': {
         'elements': ['water', 'fire', 'earth', 'air'],
         'weight': 0.4,
         'effect': {'byproduct': 0.20},
-        'description': '下次合成副产物概率 +20%'
+        'description': '下次合成副产物概率 +20%',
     },
     '水元素节约': {
         'elements': ['water'],
         'weight': 0.6,
         'effect': {'water_save': 0.10},
-        'description': '下次合成水元素消耗 -10%'
+        'description': '下次合成水元素消耗 -10%',
     },
     '火元素节约': {
         'elements': ['fire'],
         'weight': 0.6,
         'effect': {'fire_save': 0.10},
-        'description': '下次合成火元素消耗 -10%'
+        'description': '下次合成火元素消耗 -10%',
     },
     '土元素节约': {
         'elements': ['earth'],
         'weight': 0.6,
         'effect': {'earth_save': 0.10},
-        'description': '下次合成土元素消耗 -10%'
+        'description': '下次合成土元素消耗 -10%',
     },
     '风元素节约': {
         'elements': ['air'],
         'weight': 0.6,
         'effect': {'air_save': 0.10},
-        'description': '下次合成风元素消耗 -10%'
+        'description': '下次合成风元素消耗 -10%',
     }
 }
 
@@ -458,130 +458,130 @@ third = {
 mbti_targets = {
     'ISFJ': {
         'ranges': {
-            'earth': (0.45, 0.55),
-            'water': (0.35, 0.45),
-            'fire': (0.0, 0.1),
-            'air': (0.0, 0.1)
+            'earth': (0.40, 0.60),
+            'water': (0.30, 0.50),
+            'fire': (0.0, 0.20),
+            'air': (0.0, 0.20)
         }
     },
     'ESFJ': {
         'ranges': {
-            'water': (0.40, 0.50),
-            'earth': (0.35, 0.45),
-            'fire': (0.05, 0.15),
-            'air': (0.0, 0.1)
+            'water': (0.35, 0.55),
+            'earth': (0.30, 0.50),
+            'fire': (0.05, 0.25),
+            'air': (0.0, 0.20)
         }
     },
     'ISTJ': {
         'ranges': {
-            'earth': (0.50, 0.60),
-            'air': (0.25, 0.35),
-            'water': (0.05, 0.15),
-            'fire': (0.0, 0.1)
+            'earth': (0.45, 0.65),
+            'air': (0.20, 0.40),
+            'water': (0.0, 0.20),
+            'fire': (0.0, 0.20)
         }
     },
     'ISFP': {
         'ranges': {
-            'water': (0.35, 0.45),
-            'earth': (0.30, 0.40),
-            'air': (0.15, 0.25),
-            'fire': (0.0, 0.1)
+            'water': (0.30, 0.50),
+            'earth': (0.25, 0.45),
+            'air': (0.10, 0.30),
+            'fire': (0.0, 0.20)
         }
     },
     'ESTJ': {
         'ranges': {
-            'earth': (0.35, 0.45),
-            'air': (0.25, 0.35),
-            'fire': (0.15, 0.25),
-            'water': (0.05, 0.15)
+            'earth': (0.30, 0.50),
+            'air': (0.25, 0.45),
+            'fire': (0.10, 0.30),
+            'water': (0.0, 0.20)
         }
     },
     'ESFP': {
         'ranges': {
-            'fire': (0.25, 0.35),
-            'water': (0.30, 0.40),
-            'air': (0.20, 0.30),
-            'earth': (0.05, 0.15)
+            'fire': (0.25, 0.45),
+            'water': (0.25, 0.45),
+            'air': (0.15, 0.35),
+            'earth': (0.0, 0.20)
         }
     },
     'ENFP': {
         'ranges': {
-            'fire': (0.35, 0.45),
-            'water': (0.25, 0.35),
-            'air': (0.15, 0.25),
-            'earth': (0.05, 0.15)
+            'fire': (0.30, 0.50),
+            'water': (0.20, 0.40),
+            'air': (0.15, 0.35),
+            'earth': (0.0, 0.20)
         }
     },
     'ISTP': {
         'ranges': {
-            'air': (0.35, 0.45),
-            'earth': (0.30, 0.40),
-            'fire': (0.10, 0.20),
-            'water': (0.05, 0.15)
+            'air': (0.30, 0.50),
+            'earth': (0.25, 0.45),
+            'fire': (0.10, 0.30),
+            'water': (0.0, 0.20)
         }
     },
     'INFP': {
         'ranges': {
-            'water': (0.40, 0.50),
-            'fire': (0.20, 0.30),
-            'air': (0.15, 0.25),
-            'earth': (0.05, 0.15)
+            'water': (0.35, 0.55),
+            'air': (0.20, 0.40),
+            'fire': (0.15, 0.35),
+            'earth': (0.0, 0.20)
         }
     },
     'ESTP': {
         'ranges': {
-            'air': (0.30, 0.40),
-            'fire': (0.25, 0.35),
-            'earth': (0.20, 0.30),
-            'water': (0.05, 0.15)
+            'air': (0.25, 0.45),
+            'fire': (0.20, 0.40),
+            'earth': (0.15, 0.35),
+            'water': (0.0, 0.20)
         }
     },
     'INTP': {
         'ranges': {
-            'air': (0.40, 0.50),
-            'fire': (0.20, 0.30),
-            'earth': (0.15, 0.25),
-            'water': (0.05, 0.15)
+            'air': (0.35, 0.55),
+            'fire': (0.15, 0.35),
+            'earth': (0.10, 0.30),
+            'water': (0.0, 0.20)
         }
     },
     'ENTP': {
         'ranges': {
-            'fire': (0.30, 0.40),
-            'air': (0.25, 0.35),
-            'water': (0.15, 0.25),
-            'earth': (0.10, 0.20)
+            'fire': (0.25, 0.45),
+            'air': (0.20, 0.40),
+            'water': (0.10, 0.30),
+            'earth': (0.05, 0.25)
         }
     },
     'ENFJ': {
         'ranges': {
-            'water': (0.35, 0.45),
-            'fire': (0.25, 0.35),
-            'earth': (0.10, 0.20),
-            'air': (0.10, 0.20)
+            'water': (0.30, 0.50),
+            'fire': (0.20, 0.40),
+            'earth': (0.10, 0.30),
+            'air': (0.10, 0.30)
         }
     },
     'INTJ': {
         'ranges': {
-            'air': (0.35, 0.45),
-            'fire': (0.20, 0.30),
-            'water': (0.15, 0.25),
-            'earth': (0.10, 0.20)
+            'air': (0.30, 0.50),
+            'fire': (0.15, 0.35),
+            'water': (0.10, 0.30),
+            'earth': (0.05, 0.25)
         }
     },
     'ENTJ': {
         'ranges': {
-            'fire': (0.35, 0.45),
-            'air': (0.25, 0.35),
-            'earth': (0.10, 0.20),
-            'water': (0.10, 0.20)
+            'fire': (0.30, 0.50),
+            'air': (0.20, 0.40),
+            'earth': (0.10, 0.30),
+            'water': (0.05, 0.25)
         }
     },
     'INFJ': {
         'ranges': {
-            'water': (0.40, 0.50),
-            'fire': (0.20, 0.30),
-            'air': (0.15, 0.25),
-            'earth': (0.05, 0.15)
+            'water': (0.35, 0.55),
+            'fire': (0.20, 0.40),
+            'air': (0.10, 0.30),
+            'earth': (0.0, 0.20)
         }
     }
 }
@@ -591,3 +591,12 @@ interactions = {
     ('air', 'fire'): 0.1,
     ('water', 'fire'): -0.1
 }
+
+easter_eggs = [
+    {'name': '彩蛋A', 'item_type': 'initial'},
+    {'name': '彩蛋B', 'item_type': 'initial'},
+    {'name': '彩蛋C', 'item_type': 'intermediate'},
+    {'name': '彩蛋D', 'item_type': 'intermediate'},
+    {'name': '彩蛋E', 'item_type': 'third'},
+    {'name': '彩蛋F', 'item_type': 'third'}
+]
